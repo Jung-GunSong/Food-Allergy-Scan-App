@@ -55,18 +55,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  // int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  // void _incrementCounter() {
+  //   setState(()
+  //     // This call to setState tells the Flutter framework that something has
+  //     // changed in this State, which causes it to rerun the build method below
+  //     // so that the display can reflect the updated values. If we changed
+  //     // _counter without calling setState(), then the build method would not be
+  //     // called again, and so nothing would appear to happen.
+  //     _counter++;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -129,14 +129,22 @@ class FoodAllergyForm extends StatefulWidget {
   const FoodAllergyForm({super.key});
 
   @override
-  FoodAllergyFormState createState(){
-    return FoodAllergyFormState();
-  }
+  // FoodAllergyFormState createState(){
+  //   return FoodAllergyFormState();
+  State<FoodAllergyForm> createState() => _FoodAllergyFormState();
+
 }
 
-class FoodAllergyFormState extends State<FoodAllergyForm> {
+class _FoodAllergyFormState extends State<FoodAllergyForm> {
 
   final _formKey = GlobalKey<FormState>();
+  final myController = TextEditingController();
+
+  @override
+  void dispose(){
+    myController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +154,7 @@ class FoodAllergyFormState extends State<FoodAllergyForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField (
+            controller: myController,
             validator: (value){
               if (value == null || value.isEmpty) {
                 return 'Please enter some text';
@@ -153,11 +162,22 @@ class FoodAllergyFormState extends State<FoodAllergyForm> {
               return null;
             },
           ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16)
+          ),
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()){
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Processing Data'))
+                );
+                showDialog(
+                  context: context,
+                  builder: (context){
+                    return AlertDialog(
+                      content: Text(myController.text),
+                    );
+                  }
                 );
               }
             },
