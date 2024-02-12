@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:food_allergy_detection_app/preview_page.dart';
+import 'package:food_allergy_detection_app/review_page.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key, required this.cameras}) : super(key: key);
@@ -16,9 +19,12 @@ class _CameraPageState extends State<CameraPage> {
   late CameraController _cameraController;
   bool _isRearCameraSelected = true;
 
+  final _textRecognizer = TextRecognizer();
+
   @override
   void dispose() {
     _cameraController.dispose();
+    _textRecognizer.close();
     super.dispose();
   }
 
@@ -28,27 +34,27 @@ class _CameraPageState extends State<CameraPage> {
     initCamera(widget.cameras![0]);
   }
 
-  Future takePicture() async {
-    if (!_cameraController.value.isInitialized) {
-      return null;
-    }
-    if (_cameraController.value.isTakingPicture) {
-      return null;
-    }
-    try {
-      await _cameraController.setFlashMode(FlashMode.off);
-      XFile picture = await _cameraController.takePicture();
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => PreviewPage(
-                    picture: picture,
-                  )));
-    } on CameraException catch (e) {
-      debugPrint('Error occured while taking picture: $e');
-      return null;
-    }
-  }
+  // Future takePicture() async {
+  //   if (!_cameraController.value.isInitialized) {
+  //     return null;
+  //   }
+  //   if (_cameraController.value.isTakingPicture) {
+  //     return null;
+  //   }
+  //   try {
+  //     await _cameraController.setFlashMode(FlashMode.off);
+  //     XFile picture = await _cameraController.takePicture();
+  //     Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (context) => PreviewPage(
+  //                   picture: picture,
+  //                 )));
+  //   } on CameraException catch (e) {
+  //     debugPrint('Error occured while taking picture: $e');
+  //     return null;
+  //   }
+  // }
 
   Future initCamera(CameraDescription cameraDescription) async {
     _cameraController =
@@ -99,7 +105,7 @@ class _CameraPageState extends State<CameraPage> {
                 )),
                 Expanded(
                     child: IconButton(
-                  onPressed: takePicture,
+                  onPressed: _scanImage,
                   iconSize: 50,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -110,5 +116,24 @@ class _CameraPageState extends State<CameraPage> {
             )),
       ]),
     ));
+  }
+
+  Future<void> _scanImage() async {
+    if (_cameraController == null) return;
+
+    final navigator = Navigator.of(context);
+
+    final pictureFile = await _cameraController!.takePicture();
+
+    final file = File(pictureFile.path);
+
+    final inputImage = InputImage.fromFile(file);
+    final recognizedText = await _textRecognizer.processImage(inputImage);
+
+    await navigator.push(
+      MaterialPageRoute(
+        builder: (context) => PreviewPage(picture: pictureFile, text: recognizedText.text))
+    );
+
   }
 }
