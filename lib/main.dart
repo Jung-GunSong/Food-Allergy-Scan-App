@@ -42,21 +42,15 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
+      body: const Center(
 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
+            Text(
               'Please enter the food that you are allergic to:',
             ),
-            const FoodAllergyForm(),
-            ElevatedButton(
-              onPressed: () async {
-                  await availableCameras().then((value) => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => CameraPage(cameras: value))));
-                 },
-              child: const Text('Take a picture')),
+            FoodAllergyForm(),
           ],
         ),
       ),
@@ -121,7 +115,13 @@ class _FoodAllergyFormState extends State<FoodAllergyForm> {
               }
             },
             child: const Text('Submit'),
-          )
+          ),
+           ElevatedButton(
+              onPressed: () async {
+                  await availableCameras().then((value) => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => CameraPage(cameras: value, allergy:myController.text))));
+                 },
+              child: const Text('Take a picture')),
         ],
       ),
     );

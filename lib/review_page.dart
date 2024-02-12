@@ -8,16 +8,18 @@ var logger = Logger(
 );
 
 class PreviewPage extends StatelessWidget {
-  const PreviewPage({Key? key, required this.picture, required this.text}) : super(key: key);
+  const PreviewPage({Key? key, required this.picture, required this.text, required this.allergy}) : super(key: key);
 
   final XFile picture;
 
   final String text;
 
+  final String allergy;
+
   @override
   Widget build(BuildContext context) {
 
-    logger.d('text');
+    logger.d(allergy);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Results')),
@@ -28,7 +30,7 @@ class PreviewPage extends StatelessWidget {
           Image.file(File(picture.path), fit: BoxFit.cover, width: 250),
           const SizedBox(height: 24),
           Text(picture.name),
-          Outcome(text:text),
+          Outcome(text:text, match: allergy),
         ],),
       ),
     );
@@ -37,14 +39,15 @@ class PreviewPage extends StatelessWidget {
 }
 
 class Outcome extends StatelessWidget {
-  const Outcome({Key? key, required this.text}) : super(key: key);
+  const Outcome({Key? key, required this.text, required this.match}) : super(key: key);
   final String text;
+  final String match;
 
   @override
   Widget build(BuildContext context) {
     if (text == ''){
       return Text('No Matches');
     }
-    return Text(text);
+    return Text('Found $match');
   }
 }

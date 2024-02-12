@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,9 +6,11 @@ import 'package:food_allergy_detection_app/review_page.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class CameraPage extends StatefulWidget {
-  const CameraPage({Key? key, required this.cameras}) : super(key: key);
+  const CameraPage({Key? key, required this.cameras, required this.allergy}) : super(key: key);
 
   final List<CameraDescription>? cameras;
+
+  final String allergy;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -69,6 +70,25 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
+  Future <void> _scanImage() async {
+    if (_cameraController == null) return;
+
+    final navigator = Navigator.of(context);
+
+    final pictureFile = await _cameraController!.takePicture();
+
+    final file = File(pictureFile.path);
+
+    final inputImage = InputImage.fromFile(file);
+    final recognizedText = await _textRecognizer.processImage(inputImage);
+
+    await navigator.push(
+      MaterialPageRoute(
+        builder: (context) => PreviewPage(picture: pictureFile, text: recognizedText.text, allergy: widget.allergy))
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,22 +138,4 @@ class _CameraPageState extends State<CameraPage> {
     ));
   }
 
-  Future<void> _scanImage() async {
-    if (_cameraController == null) return;
-
-    final navigator = Navigator.of(context);
-
-    final pictureFile = await _cameraController!.takePicture();
-
-    final file = File(pictureFile.path);
-
-    final inputImage = InputImage.fromFile(file);
-    final recognizedText = await _textRecognizer.processImage(inputImage);
-
-    await navigator.push(
-      MaterialPageRoute(
-        builder: (context) => PreviewPage(picture: pictureFile, text: recognizedText.text))
-    );
-
-  }
 }
