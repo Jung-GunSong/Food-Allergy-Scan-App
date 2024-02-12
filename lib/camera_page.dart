@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:food_allergy_detection_app/review_page.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
+//widget to take a photo
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key, required this.cameras, required this.allergy}) : super(key: key);
 
@@ -34,29 +35,7 @@ class _CameraPageState extends State<CameraPage> {
     super.initState();
     initCamera(widget.cameras![0]);
   }
-
-  // Future takePicture() async {
-  //   if (!_cameraController.value.isInitialized) {
-  //     return null;
-  //   }
-  //   if (_cameraController.value.isTakingPicture) {
-  //     return null;
-  //   }
-  //   try {
-  //     await _cameraController.setFlashMode(FlashMode.off);
-  //     XFile picture = await _cameraController.takePicture();
-  //     Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //             builder: (context) => PreviewPage(
-  //                   picture: picture,
-  //                 )));
-  //   } on CameraException catch (e) {
-  //     debugPrint('Error occured while taking picture: $e');
-  //     return null;
-  //   }
-  // }
-
+  //selects camera
   Future initCamera(CameraDescription cameraDescription) async {
     _cameraController =
         CameraController(cameraDescription, ResolutionPreset.high);
@@ -69,7 +48,7 @@ class _CameraPageState extends State<CameraPage> {
       debugPrint("camera error $e");
     }
   }
-
+  //scans images for text using google mlkit
   Future <void> _scanImage() async {
     if (_cameraController == null) return;
 
@@ -84,7 +63,7 @@ class _CameraPageState extends State<CameraPage> {
 
     await navigator.push(
       MaterialPageRoute(
-        builder: (context) => PreviewPage(picture: pictureFile, text: recognizedText.text, allergy: widget.allergy))
+        builder: (context) => ReviewPage(picture: pictureFile, text: recognizedText.text, allergy: widget.allergy))
     );
 
   }
@@ -99,6 +78,7 @@ class _CameraPageState extends State<CameraPage> {
             : Container(
                 color: Colors.black,
                 child: const Center(child: CircularProgressIndicator())),
+
         Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -107,30 +87,34 @@ class _CameraPageState extends State<CameraPage> {
                   borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                   color: Colors.black),
               child:
-                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                Expanded(
-                    child: IconButton(
-                  padding: EdgeInsets.zero,
-                  iconSize: 30,
-                  icon: Icon(
-                      _isRearCameraSelected
-                          ? CupertinoIcons.switch_camera
-                          : CupertinoIcons.switch_camera_solid,
-                      color: Colors.white),
-                  onPressed: () {
-                    setState(
-                        () => _isRearCameraSelected = !_isRearCameraSelected);
-                    initCamera(widget.cameras![_isRearCameraSelected ? 0 : 1]);
-                  },
-                )),
-                Expanded(
-                    child: IconButton(
-                  onPressed: _scanImage,
-                  iconSize: 50,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: const Icon(Icons.circle, color: Colors.white),
-                )),
+                  Row(crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+
+                    Expanded(
+                        child: IconButton(
+                      padding: EdgeInsets.zero,
+                      iconSize: 30,
+                      icon: Icon(
+                          _isRearCameraSelected
+                              ? CupertinoIcons.switch_camera
+                              : CupertinoIcons.switch_camera_solid,
+                          color: Colors.white),
+                      onPressed: () {
+                        setState(
+                            () => _isRearCameraSelected = !_isRearCameraSelected);
+                        initCamera(widget.cameras![_isRearCameraSelected ? 0 : 1]);
+                      },
+                    )),
+
+                    Expanded(
+                        child: IconButton(
+                      onPressed: _scanImage,
+                      iconSize: 50,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(Icons.circle, color: Colors.white),
+                    )),
+
                 const Spacer(),
               ]),
             )),

@@ -1,25 +1,24 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:logger/logger.dart';
+// import 'package:logger/logger.dart';
 
-var logger = Logger(
-  printer: PrettyPrinter(),
-);
+// var logger = Logger(
+//   printer: PrettyPrinter(),
+// );
 
-class PreviewPage extends StatelessWidget {
-  const PreviewPage({Key? key, required this.picture, required this.text, required this.allergy}) : super(key: key);
+//Page to display results of the scan
+class ReviewPage extends StatelessWidget {
+  const ReviewPage({Key? key, required this.picture, required this.text, required this.allergy}) : super(key: key);
 
   final XFile picture;
-
   final String text;
-
   final String allergy;
 
   @override
   Widget build(BuildContext context) {
 
-    logger.d(allergy);
+    // logger.d(allergy);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Results')),
@@ -37,7 +36,7 @@ class PreviewPage extends StatelessWidget {
   }
 
 }
-
+//determines if match occurred between words on image and listed allergy
 class Outcome extends StatelessWidget {
   const Outcome({Key? key, required this.text, required this.match}) : super(key: key);
   final String text;
@@ -45,7 +44,7 @@ class Outcome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (text == ''){
+    if (text != match){
       return Text('No Matches');
     }
     return Text('Found $match');
