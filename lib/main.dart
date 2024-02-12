@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:food_allergy_detection_app/camera_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -86,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: const Center(
+      body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
@@ -105,14 +107,20 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'Please enter the food that you are allergic to:',
             ),
             // Text(
             //   '$_counter',
             //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
-            FoodAllergyForm(),
+            const FoodAllergyForm(),
+            ElevatedButton(
+              onPressed: () async {
+                  await availableCameras().then((value) => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => CameraPage(cameras: value))));
+                 },
+              child: const Text('Take a picture')),
           ],
         ),
       ),
